@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"context"
 	"time"
 
 	"core-gin/api/middlewares"
@@ -33,9 +32,7 @@ func (s *ServeCommand) Run() lib.CommandRunner {
 		// Using time zone as specified in env file
 		loc, _ := time.LoadLocation(env.TimeZone)
 		time.Local = loc
-
-		// setup list Of Middleware
-		defer otel.Shutdown(context.Background())
+		// setup Global Middleware
 		middleware.Setup()
 		// Set Default Port
 		const defaultServerPort = "8080"

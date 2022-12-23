@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"time"
 
 	"core-gin/lib"
 
@@ -15,21 +16,27 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-type Otel struct {
-	*otlptrace.Exporter
-}
+type Otel struct{}
 
 func NewOtel(
 	env *lib.Env,
 	logger lib.Logger,
 ) Otel {
+	// if disable do nothing
+	if !env.OtelEnable {
+		return Otel{}
+	}
+
+	ctx := context.Background()
+	sctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
 	secureOption := otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, ""))
 	if env.InsecureMode {
 		secureOption = otlptracegrpc.WithInsecure()
 	}
 
 	exporter, err := otlptrace.New(
-		context.Background(),
+		sctx,
 		otlptracegrpc.NewClient(
 			secureOption,
 			otlptracegrpc.WithEndpoint(env.OtelEndpoint),
@@ -39,8 +46,10 @@ func NewOtel(
 	if err != nil {
 		logger.Fatal(err)
 	}
+	logger.Infof("Otel connection established : %s", otel.Version())
+
 	resources, err := resource.New(
-		context.Background(),
+		sctx,
 		resource.WithAttributes(
 			attribute.String("service.name", env.ServiceName),
 			attribute.String("library.language", "go"),
@@ -58,9 +67,8 @@ func NewOtel(
 		),
 	)
 
-	logger.Infof("Otel connection established : %s", otel.Version())
+	// setup list Of Middleware
+	defer exporter.Shutdown(sctx)
 
-	return Otel{
-		exporter,
-	}
+	return Otel{}
 }

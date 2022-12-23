@@ -13,8 +13,13 @@ type Env struct {
 
 	ServiceName string `mapstructure:"SERVICE_NAME"`
 	// Otel Config
+	OtelEnable   bool   `mapstructure:"OTEL_ENABLE"`
 	InsecureMode bool   `mapstructure:"OTEL_INSECURE_MODE"`
 	OtelEndpoint string `mapstructure:"OTEL_ENDPOINT"`
+
+	// Otel Config
+	RateLimitPeriod   int64 `mapstructure:"RATE_LIMIT_PEROID"`
+	RateLimitRequests int64 `mapstructure:"RATE_LIMIT_REQUEST"`
 
 	DBUsername string `mapstructure:"DB_USER"`
 	DBPassword string `mapstructure:"DB_PASS"`
