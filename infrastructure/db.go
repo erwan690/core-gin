@@ -31,11 +31,11 @@ func NewDatabase(logger lib.Logger, env *lib.Env) Database {
 	})
 
 	if err := db.Use(otelgorm.NewPlugin()); err != nil {
-		logger.Panic(err)
+		logger.Error(err)
 	}
 	if err != nil {
 		logger.Info("Url: ", url)
-		logger.Panic(err)
+		logger.Error(err)
 	}
 
 	logger.Info("Database connection established")

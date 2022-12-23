@@ -43,7 +43,7 @@ func NewOtel(
 	if err != nil {
 		logger.Fatal(err)
 	}
-	logger.Infof("Otel connection established : %s", otel.Version())
+	logger.Infof("Otel Init Version : %s", otel.Version())
 
 	resources, err := resource.New(
 		sctx,
