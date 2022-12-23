@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"context"
-	"time"
 
 	"core-gin/lib"
 
@@ -12,7 +11,6 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktracer "go.opentelemetry.io/otel/sdk/trace"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -28,7 +26,7 @@ func NewOtel(
 	}
 
 	ctx := context.Background()
-	sctx, cancel := context.WithTimeout(ctx, time.Second)
+	sctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	secureOption := otlptracegrpc.WithTLSCredentials(credentials.NewClientTLSFromCert(nil, ""))
 	if env.InsecureMode {
@@ -40,7 +38,6 @@ func NewOtel(
 		otlptracegrpc.NewClient(
 			secureOption,
 			otlptracegrpc.WithEndpoint(env.OtelEndpoint),
-			otlptracegrpc.WithDialOption(grpc.WithBlock()),
 		),
 	)
 	if err != nil {
