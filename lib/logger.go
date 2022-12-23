@@ -52,9 +52,10 @@ func GetLogger() Logger {
 func newLogger(env Env) *Logger {
 	logLevel := env.LogLevel
 
-	config := zap.NewDevelopmentConfig()
+	config := zap.NewProductionConfig()
 
-	if env.Environment == "local" {
+	if env.Environment != "production" {
+		config = zap.NewDevelopmentConfig()
 		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	}
 
