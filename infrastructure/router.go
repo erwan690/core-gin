@@ -3,8 +3,6 @@ package infrastructure
 import (
 	"core-gin/lib"
 
-	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,8 +26,6 @@ func NewRouter(
 	httpRouter := gin.New()
 
 	httpRouter.SetTrustedProxies(nil)
-
-	httpRouter.Use(otelgin.Middleware(env.ServiceName))
 
 	httpRouter.MaxMultipartMemory = env.MaxMultipartMemory
 

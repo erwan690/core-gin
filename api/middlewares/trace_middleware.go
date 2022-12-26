@@ -10,6 +10,7 @@ import (
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -18,20 +19,24 @@ import (
 type InOutMiddleware struct {
 	logger lib.Logger
 	router infrastructure.Router
+	env    *lib.Env
 }
 
 // NewDBTransactionMiddleware -> new instance of transaction
 func NewInOutMiddlewareMiddleware(
 	logger lib.Logger,
 	router infrastructure.Router,
+	env *lib.Env,
 ) InOutMiddleware {
 	return InOutMiddleware{
 		logger: logger,
 		router: router,
+		env:    env,
 	}
 }
 
 func (m InOutMiddleware) Setup() {
+	m.router.Use(otelgin.Middleware(m.env.ServiceName))
 	logzp := m.logger.Desugar().Logger
 	m.router.Use(ginzap.GinzapWithConfig(logzp, &ginzap.Config{
 		TimeFormat: time.RFC3339,
