@@ -21,7 +21,6 @@ type DBTransactionMiddleware struct {
 func NewDBTransactionMiddleware(
 	logger lib.Logger,
 	db infrastructure.Database,
-	router infrastructure.Router,
 ) DBTransactionMiddleware {
 	return DBTransactionMiddleware{
 		logger: logger,

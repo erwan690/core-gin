@@ -18,7 +18,6 @@ func NewRouter(
 	env *lib.Env,
 	logger lib.Logger,
 ) Router {
-	gin.DefaultWriter = logger.GetGinLogger()
 	appEnv := env.Environment
 	if appEnv == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -26,7 +25,7 @@ func NewRouter(
 		gin.SetMode(gin.DebugMode)
 	}
 
-	httpRouter := gin.Default()
+	httpRouter := gin.New()
 
 	httpRouter.SetTrustedProxies(nil)
 

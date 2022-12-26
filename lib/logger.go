@@ -2,7 +2,6 @@ package lib
 
 import (
 	"context"
-	"io"
 	"time"
 
 	"go.uber.org/fx/fxevent"
@@ -34,11 +33,6 @@ type FxLogger struct {
 	*Logger
 }
 
-// GinLogger logger for gin framework [subbed from main logger]
-type GinLogger struct {
-	*Logger
-}
-
 // GetLogger gets the global instance of the logger
 func GetLogger() Logger {
 	if globalLog != nil {
@@ -53,11 +47,6 @@ func newLogger(env Env) *Logger {
 	logLevel := env.LogLevel
 
 	config := zap.NewProductionConfig()
-
-	if env.Environment != "production" {
-		config = zap.NewDevelopmentConfig()
-		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	}
 
 	var level zapcore.Level
 	switch logLevel {
@@ -178,16 +167,6 @@ func (l *FxLogger) LogEvent(event fxevent.Event) {
 	}
 }
 
-// GetGinLogger gets logger for gin framework debugging
-func (l *Logger) GetGinLogger() io.Writer {
-	logger := otelzapLogger.WithOptions(
-		zap.WithCaller(false),
-	)
-	return GinLogger{
-		Logger: newSugaredLogger(logger),
-	}
-}
-
 // ------ GORM logger interface implementation -----
 
 // LogMode set log mode
@@ -250,11 +229,3 @@ func (l FxLogger) Printf(str string, args ...interface{}) {
 	}
 	l.Debug(str)
 }
-
-// Writer interface implementation for gin-framework
-func (l GinLogger) Write(p []byte) (n int, err error) {
-	l.Info(string(p))
-	return len(p), nil
-}
-
-//

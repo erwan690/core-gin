@@ -4,7 +4,9 @@ go 1.19
 
 require (
 	github.com/gin-contrib/cors v1.4.0
+	github.com/gin-contrib/zap v0.1.0
 	github.com/gin-gonic/gin v1.8.1
+	github.com/google/uuid v1.1.2
 	github.com/prometheus/client_golang v1.11.0
 	github.com/slok/go-http-metrics v0.10.0
 	github.com/spf13/cobra v1.6.1
@@ -17,6 +19,7 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.11.2
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.11.2
 	go.opentelemetry.io/otel/sdk v1.11.2
+	go.opentelemetry.io/otel/trace v1.11.2
 	go.uber.org/fx v1.18.2
 	go.uber.org/zap v1.24.0
 	google.golang.org/grpc v1.51.0
@@ -74,7 +77,6 @@ require (
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.17 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.11.2 // indirect
 	go.opentelemetry.io/otel/metric v0.32.1 // indirect
-	go.opentelemetry.io/otel/trace v1.11.2 // indirect
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/dig v1.15.0 // indirect
