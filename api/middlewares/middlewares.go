@@ -10,6 +10,7 @@ var Module = fx.Options(
 	fx.Provide(NewPaginationMiddleware),
 	fx.Provide(NewRateLimitMiddleware),
 	fx.Provide(NewInOutMiddlewareMiddleware),
+	fx.Provide(NewSwaggerMiddleware),
 	fx.Provide(NewMiddlewares),
 )
 
@@ -28,12 +29,14 @@ func NewMiddlewares(
 	metricsMiddleware MetricsMiddleware,
 	rateLimitMiddleware RateLimitMiddleware,
 	inOutMiddleware InOutMiddleware,
+	swaggerMiddleware SwaggerMiddleware,
 ) Middlewares {
 	return Middlewares{
 		corsMiddleware,
 		metricsMiddleware,
 		rateLimitMiddleware,
 		inOutMiddleware,
+		swaggerMiddleware,
 	}
 }
 
