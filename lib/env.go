@@ -1,10 +1,6 @@
 package lib
 
-import (
-	"log"
-
-	"github.com/spf13/viper"
-)
+import "core-gin/utils"
 
 type Env struct {
 	LogLevel    string `mapstructure:"LOG_LEVEL"`
@@ -42,19 +38,28 @@ func GetEnv() Env {
 }
 
 func NewEnv() *Env {
-	viper.SetConfigFile(".env")
+	globalEnv.LogLevel = utils.GetEnv("LOG_LEVEL", "info")
+	globalEnv.ServerPort = utils.GetEnv("SERVER_PORT", "4040")
+	globalEnv.Environment = utils.GetEnv("ENVIRONMENT", "local")
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatal("cannot read cofiguration", err)
-	}
+	globalEnv.ServiceName = utils.GetEnv("SERVICE_NAME", "core-gin")
 
-	viper.SetDefault("TIMEZONE", "UTC")
+	globalEnv.OtelEnable = utils.GetEnvAsBool("OTEL_ENABLE", false)
+	globalEnv.InsecureMode = utils.GetEnvAsBool("OTEL_INSECURE_MODE", true)
+	globalEnv.OtelEndpoint = utils.GetEnv("OTEL_ENDPOINT", "local")
 
-	err = viper.Unmarshal(&globalEnv)
-	if err != nil {
-		log.Fatal("environment cant be loaded: ", err)
-	}
+	globalEnv.RateLimitPeriod = utils.GetEnvAsInt64("RATE_LIMIT_PEROID", 5)
+	globalEnv.RateLimitRequests = utils.GetEnvAsInt64("RATE_LIMIT_REQUEST", 200)
+
+	globalEnv.DBUsername = utils.GetEnv("DB_USER", "")
+	globalEnv.DBPassword = utils.GetEnv("DB_PASS", "")
+	globalEnv.DBHost = utils.GetEnv("DB_HOST", "")
+	globalEnv.DBPort = utils.GetEnv("DB_PORT", "")
+	globalEnv.DBName = utils.GetEnv("DB_NAME", "")
+
+	globalEnv.TimeZone = utils.GetEnv("TIMEZONE", "UTC")
+
+	globalEnv.JWTSecret = utils.GetEnv("JWT_SECRET", "")
 
 	return &globalEnv
 }
