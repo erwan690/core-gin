@@ -1,6 +1,6 @@
 SERVICE_NAME=core-gin
 ENVIRONMENT=local
-LOG_LEVEL=debug
+LOG_LEVEL=Info
 
 SERVER_PORT=4040
 
@@ -8,12 +8,16 @@ DB_USER=user
 DB_PASS=password
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=gin-core
+DB_NAME=core-gin
 
 OTEL_ENABLE=true
 OTEL_ENDPOINT=localhost:4317
 OTEL_INSECURE_MODE=true
 OTEL_API_KEY=
+
+# limit per minutes
+RATE_LIMIT_PEROID=5
+RATE_LIMIT_REQUEST=200
 
 DEBUG=true
 

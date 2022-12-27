@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"context"
 	"time"
 
 	"core-gin/api/middlewares"
+	"core-gin/api/routes"
 	"core-gin/infrastructure"
 	"core-gin/lib"
 
@@ -22,18 +24,24 @@ func (s *ServeCommand) Setup(cmd *cobra.Command) {}
 func (s *ServeCommand) Run() lib.CommandRunner {
 	return func(
 		env *lib.Env,
-		middleware middlewares.Middlewares,
+		otel infrastructure.Otel,
+		middlewares middlewares.Middlewares,
+		routes routes.Routes,
 		logger lib.Logger,
 		router infrastructure.Router,
 		database infrastructure.Database,
-		otel infrastructure.Otel,
 	) {
 		logger.Info("Running server")
 		// Using time zone as specified in env file
 		loc, _ := time.LoadLocation(env.TimeZone)
 		time.Local = loc
+		// setup Otel
+		defer otel.Shutdown(context.Background())
+
 		// setup Global Middleware
-		middleware.Setup()
+		middlewares.Setup()
+		// setup Routes
+		routes.Setup()
 		// Set Default Port
 		const defaultServerPort = "8080"
 
