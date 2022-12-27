@@ -3,23 +3,22 @@ package services
 import (
 	"context"
 
+	"core-gin/infrastructure"
 	"core-gin/internal/repositories"
-
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type HealthService struct {
 	repository repositories.HealthRepo
+	tracer     infrastructure.Tracer
 }
 
-func NewHealthService(repository repositories.HealthRepo) HealthService {
-	return HealthService{repository: repository}
+func NewHealthService(repository repositories.HealthRepo, tracer infrastructure.Tracer) HealthService {
+	return HealthService{repository: repository, tracer: tracer}
 }
 
 func (s *HealthService) PingDB(ctx context.Context) (err error) {
-	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(attribute.String("HealthService", "PingDB"))
+	ctx, span := s.tracer.Start(ctx, "HealthService.PingDB")
+	defer span.End()
 	db, err := s.repository.GetDB(ctx)
 	if err != nil {
 		return err
