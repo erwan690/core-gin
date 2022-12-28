@@ -27,9 +27,5 @@ func (s *HealthService) PingDB(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	err = db.PingContext(ctx)
-	if err != nil {
-		return err
-	}
-	return nil
+	return db.PingContext(ctx)
 }
