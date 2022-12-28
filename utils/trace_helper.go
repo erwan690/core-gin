@@ -39,7 +39,7 @@ func GetTraceIDFromCtx(ctx context.Context) string {
 	return span.SpanContext().TraceID().String()
 }
 
-func GetSpaneIDFromCtx(ctx context.Context) string {
+func GetSpanIDFromCtx(ctx context.Context) string {
 	if ctx == nil {
 		return "0000000000000000"
 	}
@@ -49,6 +49,9 @@ func GetSpaneIDFromCtx(ctx context.Context) string {
 }
 
 func GetBodyTrace(r *http.Request) string {
+	if r == nil || r.Body == nil {
+		return ""
+	}
 	var body []byte
 	var buf bytes.Buffer
 	tee := io.TeeReader(r.Body, &buf)

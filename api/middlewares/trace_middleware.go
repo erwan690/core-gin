@@ -63,7 +63,7 @@ func (m InOutMiddleware) Setup() {
 			// log trace and span ID
 			if trace.SpanFromContext(ctx).SpanContext().IsValid() {
 				fields = append(fields, zap.String("trace_id", utils.GetTraceIDFromCtx(ctx)))
-				fields = append(fields, zap.String("span_id", utils.GetSpaneIDFromCtx(ctx)))
+				fields = append(fields, zap.String("span_id", utils.GetSpanIDFromCtx(ctx)))
 			}
 
 			if body := utils.GetBodyTrace(c.Request); body != "" {
