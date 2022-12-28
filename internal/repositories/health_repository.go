@@ -13,10 +13,10 @@ type IHealthRepo interface {
 
 type HealthRepo struct {
 	infrastructure.Database
-	tracer infrastructure.Tracer
+	tracer infrastructure.ITracer
 }
 
-func NewHealthRepo(db infrastructure.Database, tracer infrastructure.Tracer) IHealthRepo {
+func NewHealthRepo(db infrastructure.Database, tracer infrastructure.ITracer) IHealthRepo {
 	return &HealthRepo{Database: db, tracer: tracer}
 }
 

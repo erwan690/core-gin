@@ -14,7 +14,6 @@ type Router struct {
 // NewRouter : all the routes are defined here
 func NewRouter(
 	env *lib.Env,
-	logger lib.Logger,
 ) Router {
 	appEnv := env.Environment
 	if appEnv == "production" {
@@ -24,6 +23,8 @@ func NewRouter(
 	}
 
 	httpRouter := gin.New()
+
+	httpRouter.RemoveExtraSlash = true
 
 	httpRouter.SetTrustedProxies(nil)
 

@@ -5,6 +5,10 @@ import (
 	"core-gin/internal/handlers"
 )
 
+type IHealthRoutes interface {
+	Setup()
+}
+
 // HealthRoutes struct
 type HealthRoutes struct {
 	route   infrastructure.Router
@@ -15,7 +19,7 @@ type HealthRoutes struct {
 func NewHealthRoutes(
 	route infrastructure.Router,
 	handler handlers.IHealthHandler,
-) HealthRoutes {
+) IHealthRoutes {
 	return HealthRoutes{
 		handler: handler,
 		route:   route,

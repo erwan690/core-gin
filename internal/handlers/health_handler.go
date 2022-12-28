@@ -15,10 +15,10 @@ type IHealthHandler interface {
 
 type HealthHandler struct {
 	service services.IHealthService
-	tracer  infrastructure.Tracer
+	tracer  infrastructure.ITracer
 }
 
-func NewHealthHandler(service services.IHealthService, tracer infrastructure.Tracer) IHealthHandler {
+func NewHealthHandler(service services.IHealthService, tracer infrastructure.ITracer) IHealthHandler {
 	return &HealthHandler{service: service, tracer: tracer}
 }
 

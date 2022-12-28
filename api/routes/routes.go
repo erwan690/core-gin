@@ -18,7 +18,7 @@ type Route interface {
 
 // NewRoutes sets up routes
 func NewRoutes(
-	healthRoutes HealthRoutes,
+	healthRoutes IHealthRoutes,
 ) Routes {
 	return Routes{
 		healthRoutes,

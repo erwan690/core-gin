@@ -7,16 +7,14 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-type Tracer struct {
+type ITracer interface {
 	trace.Tracer
 }
 
 func NewTracer(
 	env *lib.Env,
-) Tracer {
+) ITracer {
 	tracer := otel.Tracer(env.ServiceName)
 
-	return Tracer{
-		tracer,
-	}
+	return tracer
 }
