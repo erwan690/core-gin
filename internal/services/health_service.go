@@ -7,13 +7,17 @@ import (
 	"core-gin/internal/repositories"
 )
 
+type IHealthService interface {
+	PingDB(ctx context.Context) (err error)
+}
+
 type HealthService struct {
-	repository repositories.HealthRepo
+	repository repositories.IHealthRepo
 	tracer     infrastructure.Tracer
 }
 
-func NewHealthService(repository repositories.HealthRepo, tracer infrastructure.Tracer) HealthService {
-	return HealthService{repository: repository, tracer: tracer}
+func NewHealthService(repository repositories.IHealthRepo, tracer infrastructure.Tracer) IHealthService {
+	return &HealthService{repository: repository, tracer: tracer}
 }
 
 func (s *HealthService) PingDB(ctx context.Context) (err error) {

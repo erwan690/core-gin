@@ -9,13 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type IHealthHandler interface {
+	Health(c *gin.Context)
+}
+
 type HealthHandler struct {
-	service services.HealthService
+	service services.IHealthService
 	tracer  infrastructure.Tracer
 }
 
-func NewHealthHandler(service services.HealthService, tracer infrastructure.Tracer) HealthHandler {
-	return HealthHandler{service: service, tracer: tracer}
+func NewHealthHandler(service services.IHealthService, tracer infrastructure.Tracer) IHealthHandler {
+	return &HealthHandler{service: service, tracer: tracer}
 }
 
 func (h *HealthHandler) Health(c *gin.Context) {

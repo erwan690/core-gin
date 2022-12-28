@@ -8,13 +8,13 @@ import (
 // HealthRoutes struct
 type HealthRoutes struct {
 	route   infrastructure.Router
-	handler handlers.HealthHandler
+	handler handlers.IHealthHandler
 }
 
 // NewHealthRoutes creates new user controller
 func NewHealthRoutes(
 	route infrastructure.Router,
-	handler handlers.HealthHandler,
+	handler handlers.IHealthHandler,
 ) HealthRoutes {
 	return HealthRoutes{
 		handler: handler,
