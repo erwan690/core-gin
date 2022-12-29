@@ -8,4 +8,5 @@ var Module = fx.Options(
 	fx.Provide(NewDatabase),
 	fx.Provide(NewOtel),
 	fx.Provide(NewTracer),
+	fx.Provide(NewSlack),
 )

@@ -27,6 +27,10 @@ type Env struct {
 
 	TimeZone  string `mapstructure:"TIMEZONE"`
 	JWTSecret string `mapstructure:"JWT_SECRET"`
+
+	SlackToken     string `mapstructure:"SLACK_TOKEN"`
+	SlackMaintener string `mapstructure:"SLACK_MAINTENER"`
+	SlackChannelID string `mapstructure:"SLACK_CHANNEL"`
 }
 
 var globalEnv = Env{
@@ -60,6 +64,10 @@ func NewEnv() *Env {
 	globalEnv.TimeZone = utils.GetEnv("TIMEZONE", "UTC")
 
 	globalEnv.JWTSecret = utils.GetEnv("JWT_SECRET", "")
+
+	globalEnv.SlackToken = utils.GetEnv("SLACK_TOKEN", "")
+	globalEnv.SlackMaintener = utils.GetEnv("SLACK_MAINTENER", "")
+	globalEnv.SlackChannelID = utils.GetEnv("SLACK_CHANNEL", "")
 
 	return &globalEnv
 }
