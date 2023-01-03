@@ -1,117 +1,109 @@
-package utils
+package utils_test
 
 import (
 	"bytes"
 	"context"
 	"net/http"
-	"testing"
 
+	"core-gin/utils"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"go.opentelemetry.io/otel"
 	sdktracer "go.opentelemetry.io/otel/sdk/trace"
 )
 
-func TestGetAppSource(t *testing.T) {
-	// Test with a non-nil request
-	req, _ := http.NewRequest("GET", "/", nil)
-	req.Header.Set("X-Client-Id", "test-client")
-	result := GetAppSource(req)
-	if result != "test-client" {
-		t.Errorf("Expected 'test-client', got '%s'", result)
-	}
+var _ = Describe("Utils", func() {
+	Describe("GetAppSource", func() {
+		It("returns the value of the X-Client-Id header when the request is non-nil", func() {
+			req, _ := http.NewRequest("GET", "/", nil)
+			req.Header.Set("X-Client-Id", "test-client")
+			result := utils.GetAppSource(req)
+			Expect(result).To(Equal("test-client"))
+		})
 
-	// Test with a nil request
-	result = GetAppSource(nil)
-	if result != "" {
-		t.Errorf("Expected '', got '%s'", result)
-	}
-}
+		It("returns an empty string when the request is nil", func() {
+			result := utils.GetAppSource(nil)
+			Expect(result).To(Equal(""))
+		})
+	})
 
-func TestGetRequestID(t *testing.T) {
-	// Test with a non-nil request
-	req, _ := http.NewRequest("GET", "/", nil)
-	req.Header.Set("X-Request-Id", "12345")
-	result := GetRequestID(req)
-	if result != "12345" {
-		t.Errorf("Expected '12345', got '%s'", result)
-	}
+	Describe("GetRequestID", func() {
+		It("returns the value of the X-Request-Id header when the request is non-nil", func() {
+			req, _ := http.NewRequest("GET", "/", nil)
+			req.Header.Set("X-Request-Id", "12345")
+			result := utils.GetRequestID(req)
+			Expect(result).To(Equal("12345"))
+		})
 
-	// Test with a nil request
-	result = GetRequestID(nil)
-	if result != "" {
-		t.Errorf("Expected '', got '%s'", result)
-	}
-}
+		It("returns an empty string when the request is nil", func() {
+			result := utils.GetRequestID(nil)
+			Expect(result).To(Equal(""))
+		})
+	})
 
-func TestGetAppVersion(t *testing.T) {
-	// Test with a non-nil request
-	req, _ := http.NewRequest("GET", "/", nil)
-	req.Header.Set("X-Client-Version", "12345")
-	result := GetAppVersion(req)
-	if result != "12345" {
-		t.Errorf("Expected '12345', got '%s'", result)
-	}
+	Describe("GetAppVersion", func() {
+		It("returns the value of the X-Client-Version header when the request is non-nil", func() {
+			req, _ := http.NewRequest("GET", "/", nil)
+			req.Header.Set("X-Client-Version", "12345")
+			result := utils.GetAppVersion(req)
+			Expect(result).To(Equal("12345"))
+		})
 
-	// Test with a nil request
-	result = GetAppVersion(nil)
-	if result != "" {
-		t.Errorf("Expected '', got '%s'", result)
-	}
-}
+		It("returns an empty string when the request is nil", func() {
+			result := utils.GetAppVersion(nil)
+			Expect(result).To(Equal(""))
+		})
+	})
 
-func TestGetTraceIDFromCtx(t *testing.T) {
-	// Test with a non-nil context
-	tracer := otel.Tracer("test-tracer")
-	otel.SetTracerProvider(
-		sdktracer.NewTracerProvider(
-			sdktracer.WithSampler(sdktracer.AlwaysSample()),
-		),
-	)
-	ctx, _ := tracer.Start(context.Background(), "test-span")
-	result := GetTraceIDFromCtx(ctx)
-	if result == "00000000000000000000000000000000" {
-		t.Errorf("Expected a non-zero trace ID, got '%s'", result)
-	}
+	Describe("GetTraceIDFromCtx", func() {
+		It("returns a non-zero trace ID when the context is non-nil", func() {
+			tracer := otel.Tracer("test-tracer")
+			otel.SetTracerProvider(
+				sdktracer.NewTracerProvider(
+					sdktracer.WithSampler(sdktracer.AlwaysSample()),
+				),
+			)
+			ctx, _ := tracer.Start(context.Background(), "test-span")
+			result := utils.GetTraceIDFromCtx(ctx)
+			Expect(result).ToNot(Equal("00000000000000000000000000000000"))
+		})
 
-	// Test with a nil context
-	result = GetTraceIDFromCtx(nil)
-	if result != "00000000000000000000000000000000" {
-		t.Errorf("Expected '00000000000000000000000000000000', got '%s'", result)
-	}
-}
+		It("returns '00000000000000000000000000000000' when the context is nil", func() {
+			result := utils.GetTraceIDFromCtx(nil)
+			Expect(result).To(Equal("00000000000000000000000000000000"))
+		})
+	})
 
-func TestGetSpanIDFromCtx(t *testing.T) {
-	// Test with a non-nil context
-	tracer := otel.Tracer("test-tracer")
-	otel.SetTracerProvider(
-		sdktracer.NewTracerProvider(
-			sdktracer.WithSampler(sdktracer.AlwaysSample()),
-		),
-	)
-	ctx, _ := tracer.Start(context.Background(), "test-span")
-	result := GetSpanIDFromCtx(ctx)
-	if result == "0000000000000000" {
-		t.Errorf("Expected a non-zero span ID, got '%s'", result)
-	}
+	Describe("GetSpanIDFromCtx", func() {
+		It("returns a non-zero span ID when the context is non-nil", func() {
+			tracer := otel.Tracer("test-tracer")
+			otel.SetTracerProvider(
+				sdktracer.NewTracerProvider(
+					sdktracer.WithSampler(sdktracer.AlwaysSample()),
+				),
+			)
+			ctx, _ := tracer.Start(context.Background(), "test")
+			result := utils.GetSpanIDFromCtx(ctx)
+			Expect(result).ToNot(Equal("0000000000000000"))
+		})
 
-	// Test with a nil context
-	result = GetSpanIDFromCtx(nil)
-	if result != "0000000000000000" {
-		t.Errorf("Expected '0000000000000000', got '%s'", result)
-	}
-}
+		It("returns '0000000000000000' when the context is nil", func() {
+			result := utils.GetSpanIDFromCtx(nil)
+			Expect(result).To(Equal("0000000000000000"))
+		})
+	})
 
-func TestGetBodyTrace(t *testing.T) {
-	// Test with a non-nil request
-	body := "test body"
-	req, _ := http.NewRequest("POST", "/", bytes.NewBuffer([]byte(body)))
-	result := GetBodyTrace(req)
-	if result != body {
-		t.Errorf("Expected '%s', got '%s'", body, result)
-	}
+	Describe("GetBodyTrace", func() {
+		It("returns the request body as a string when the request is non-nil", func() {
+			req, _ := http.NewRequest("POST", "/", bytes.NewBuffer([]byte(`{"key": "value"}`)))
+			result := utils.GetBodyTrace(req)
+			Expect(result).To(Equal(`{"key": "value"}`))
+		})
 
-	// Test with a nil request
-	result = GetBodyTrace(nil)
-	if result != "" {
-		t.Errorf("Expected '', got '%s'", result)
-	}
-}
+		It("returns an empty string when the request is nil", func() {
+			result := utils.GetBodyTrace(nil)
+			Expect(result).To(Equal(""))
+		})
+	})
+})
