@@ -1,15 +1,18 @@
-package infrastructure
+package infrastructure_test
 
 import (
-	"testing"
-
+	"core-gin/infrastructure"
 	"core-gin/lib"
 
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-func TestNewTracer(t *testing.T) {
-	env := &lib.Env{ServiceName: "test-service"}
-	tracer := NewTracer(env)
-	assert.NotNil(t, tracer)
-}
+var _ = Describe("NewTracer", func() {
+	It("returns a non-nil ITracer interface", func() {
+		env := &lib.Env{
+			ServiceName: "test-service",
+		}
+		Expect(infrastructure.NewTracer(env)).NotTo(BeNil())
+	})
+})

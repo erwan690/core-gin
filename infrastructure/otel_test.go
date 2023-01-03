@@ -1,19 +1,46 @@
-package infrastructure
+package infrastructure_test
 
 import (
-	"testing"
-
 	"core-gin/lib"
 
-	"github.com/stretchr/testify/assert"
+	"core-gin/infrastructure"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-func TestNewOtel(t *testing.T) {
-	env := &lib.Env{OtelEnable: true, OtelEndpoint: "test-endpoint", ServiceName: "test-service", InsecureMode: true}
-	otel := NewOtel(env, lib.GetLogger())
-	assert.NotNil(t, otel.Exporter)
+var _ = Describe("NewOtel", func() {
+	It("returns a non-nil Otel struct", func() {
+		logger := lib.GetLogger()
+		env := &lib.Env{
+			OtelEnable:   true,
+			OtelEndpoint: "localhost:55680",
+			ServiceName:  "test-service",
+		}
+		Expect(infrastructure.NewOtel(env, logger)).NotTo(BeNil())
+	})
 
-	env = &lib.Env{OtelEnable: false}
-	otel = NewOtel(env, lib.GetLogger())
-	assert.Nil(t, otel.Exporter)
-}
+	It("returns a non-nil Otel struct with insecure", func() {
+		logger := lib.GetLogger()
+		env := &lib.Env{
+			InsecureMode: true,
+			OtelEnable:   true,
+			OtelEndpoint: "localhost:55680",
+			ServiceName:  "test-service",
+		}
+		Expect(infrastructure.NewOtel(env, logger)).NotTo(BeNil())
+	})
+
+	It("returns a nil Otel struct with disable", func() {
+		logger := lib.GetLogger()
+		env := &lib.Env{
+			InsecureMode: true,
+			OtelEnable:   false,
+			OtelEndpoint: "localhost:55680",
+			ServiceName:  "test-service",
+		}
+		Expect(infrastructure.NewOtel(env, logger)).To(Equal(infrastructure.Otel{
+			Exporter: nil,
+		}))
+	})
+})
