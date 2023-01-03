@@ -1,13 +1,13 @@
-package routes
+package routes_test
 
 import (
-	"testing"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
+	"core-gin/api/routes"
 	"core-gin/infrastructure"
-	"core-gin/lib"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 )
 
 type MockHealthHandler struct{}
@@ -16,20 +16,26 @@ func (m *MockHealthHandler) Health(c *gin.Context) {
 	// Do nothing, this is a mock implementation
 }
 
-func TestHealthRoutes_Setup(t *testing.T) {
-	// Create a router and a mock handler
-	router := infrastructure.NewRouter(&lib.Env{})
-	mockHandler := new(MockHealthHandler)
+var _ = Describe("HealthRoutes", func() {
+	var (
+		router       infrastructure.Router
+		mockHandler  *MockHealthHandler
+		healthRoutes routes.IHealthRoutes
+	)
 
-	// Create a new HealthRoutes instance
-	routes := NewHealthRoutes(router, mockHandler)
+	BeforeEach(func() {
+		router = infrastructure.Router{
+			Engine: gin.New(),
+		}
+		mockHandler = new(MockHealthHandler)
+		healthRoutes = routes.NewHealthRoutes(router, mockHandler)
+	})
 
-	// Call the Setup method
-	routes.Setup()
-
-	// Assert that the router has the correct route registered
-	assert.Len(t, router.Routes(), 1)
-	route := router.Routes()[0]
-	assert.Equal(t, "GET", route.Method)
-	assert.Equal(t, "/health", route.Path)
-}
+	It("registers the correct route in the router", func() {
+		healthRoutes.Setup()
+		Expect(router.Routes()).To(HaveLen(1))
+		route := router.Routes()[0]
+		Expect(route.Method).To(Equal("GET"))
+		Expect(route.Path).To(Equal("/health"))
+	})
+})

@@ -1,39 +1,35 @@
-package middlewares
+package middlewares_test
 
 import (
-	"testing"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
+	"core-gin/api/middlewares"
 	"core-gin/infrastructure"
 	"core-gin/lib"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 )
 
-// TestCorsMiddleware is a test suite for the CorsMiddleware struct
-type TestCorsMiddleware struct {
-	suite.Suite
-}
+var _ = Describe("CorsMiddleware", func() {
+	var (
+		router         infrastructure.Router
+		logger         lib.Logger
+		corsMiddleware middlewares.CorsMiddleware
+	)
 
-// TestSetup tests the Setup method of the CorsMiddleware struct
-func (suite *TestCorsMiddleware) TestSetup() {
-	router := infrastructure.Router{
-		Engine: gin.New(),
-	}
-	logger := lib.GetLogger()
-	corsMiddleware := NewCorsMiddleware(router, logger)
+	BeforeEach(func() {
+		router = infrastructure.Router{
+			Engine: gin.New(),
+		}
+		logger = lib.GetLogger()
+		corsMiddleware = middlewares.NewCorsMiddleware(router, logger)
+	})
 
-	corsMiddleware.Setup()
-
-	// Verify that the correct middleware was added to the router
-	middlewares := router.Handlers
-	suite.Equal(1, len(middlewares))
-	assert.IsType(suite.T(), cors.Default(), middlewares[0])
-}
-
-// TestCorsMiddlewareSuite runs the TestCorsMiddleware test suite
-func TestCorsMiddlewareSuite(t *testing.T) {
-	suite.Run(t, new(TestCorsMiddleware))
-}
+	It("adds the correct middleware to the router", func() {
+		corsMiddleware.Setup()
+		Expect(router.Handlers).To(HaveLen(1))
+		Expect(router.Handlers[0]).To(BeAssignableToTypeOf(cors.Default()))
+	})
+})

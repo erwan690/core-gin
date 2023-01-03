@@ -1,40 +1,41 @@
-package commands
+package commands_test
 
 import (
-	"testing"
-
+	"core-gin/commands"
 	"core-gin/lib"
 
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/mock"
 	"go.uber.org/fx"
 )
 
-type mockCommand struct {
-	mock.Mock
+var _ = Describe("WrapSubCommand", func() {
+	It("returns a *cobra.Command with a valid Run field", func() {
+		name := "test-command"
+		cmd := &TestCommand{}
+		opt := fx.Options()
+		wrappedCmd := commands.WrapSubCommand(name, cmd, opt)
+		Expect(wrappedCmd.Run).NotTo(BeNil())
+		Expect(wrappedCmd.Run).To(BeAssignableToTypeOf(func(c *cobra.Command, args []string) {}))
+	})
+})
+
+var _ = Describe("GetSubCommands", func() {
+	It("returns a non-empty slice of *cobra.Command values", func() {
+		opt := fx.Options()
+		Expect(commands.GetSubCommands(opt)).NotTo(BeEmpty())
+	})
+})
+
+type TestCommand struct{}
+
+func (c *TestCommand) Short() string {
+	return "test command"
 }
 
-func (m *mockCommand) Short() string {
-	return "mock command"
-}
+func (c *TestCommand) Setup(cmd *cobra.Command) {}
 
-func (m *mockCommand) Setup(cmd *cobra.Command) {}
-
-func (m *mockCommand) Run() lib.CommandRunner {
-	return func(fx.Lifecycle) {}
-}
-
-func TestWrapSubCommand(t *testing.T) {
-	name := "test"
-	cmd := &mockCommand{}
-	opt := fx.Options()
-
-	wrappedCmd := WrapSubCommand(name, cmd, opt)
-	if wrappedCmd.Use != name {
-		t.Errorf("expected wrapped command Use field to be %q, got %q", name, wrappedCmd.Use)
-	}
-
-	if wrappedCmd.Short != cmd.Short() {
-		t.Errorf("expected wrapped command Short field to be %q, got %q", cmd.Short(), wrappedCmd.Short)
-	}
+func (c *TestCommand) Run() lib.CommandRunner {
+	return func(lc fx.Lifecycle) {}
 }

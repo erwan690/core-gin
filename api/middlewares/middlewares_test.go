@@ -1,33 +1,49 @@
-package middlewares
+package middlewares_test
 
 import (
-	"testing"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
+	"core-gin/api/middlewares"
 	"core-gin/infrastructure"
 	"core-gin/lib"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestModule(t *testing.T) {
-	env := &lib.Env{}
-	router := infrastructure.Router{
-		Engine: gin.New(),
-	}
-	logger := lib.GetLogger()
-	corsMiddleware := NewCorsMiddleware(router, logger)
-	metricsMiddleware := NewMetricsMiddleware(router, logger)
-	rateLimitMiddleware := NewRateLimitMiddleware(logger, env, router)
-	inOutMiddleware := NewInOutMiddlewareMiddleware(logger, router, env)
-	swaggerMiddleware := NewSwaggerMiddleware(router, logger)
+var _ = Describe("Module", func() {
+	var (
+		env                 *lib.Env
+		router              infrastructure.Router
+		logger              lib.Logger
+		corsMiddleware      middlewares.CorsMiddleware
+		metricsMiddleware   middlewares.MetricsMiddleware
+		rateLimitMiddleware middlewares.RateLimitMiddleware
+		inOutMiddleware     middlewares.InOutMiddleware
+		swaggerMiddleware   middlewares.SwaggerMiddleware
+		middlewaresArray    middlewares.Middlewares
+	)
 
-	middlewares := NewMiddlewares(corsMiddleware, metricsMiddleware, rateLimitMiddleware, inOutMiddleware, swaggerMiddleware)
+	BeforeEach(func() {
+		env = &lib.Env{}
+		router = infrastructure.Router{
+			Engine: gin.New(),
+		}
+		logger = lib.GetLogger()
+		corsMiddleware = middlewares.NewCorsMiddleware(router, logger)
+		metricsMiddleware = middlewares.NewMetricsMiddleware(router, logger)
+		rateLimitMiddleware = middlewares.NewRateLimitMiddleware(logger, env, router)
+		inOutMiddleware = middlewares.NewInOutMiddlewareMiddleware(logger, router, env)
+		swaggerMiddleware = middlewares.NewSwaggerMiddleware(router, logger)
+		middlewaresArray = middlewares.NewMiddlewares(corsMiddleware, metricsMiddleware, rateLimitMiddleware, inOutMiddleware, swaggerMiddleware)
+	})
 
-	assert.Equal(t, 5, len(middlewares))
-	assert.IsType(t, corsMiddleware, middlewares[0])
-	assert.IsType(t, metricsMiddleware, middlewares[1])
-	assert.IsType(t, rateLimitMiddleware, middlewares[2])
-	assert.IsType(t, inOutMiddleware, middlewares[3])
-	assert.IsType(t, swaggerMiddleware, middlewares[4])
-}
+	It("creates a slice of middlewares with the correct length and element types", func() {
+		Expect(middlewaresArray).To(HaveLen(5))
+		Expect(middlewaresArray[0]).To(BeAssignableToTypeOf(corsMiddleware))
+		Expect(middlewaresArray[1]).To(BeAssignableToTypeOf(metricsMiddleware))
+		Expect(middlewaresArray[2]).To(BeAssignableToTypeOf(rateLimitMiddleware))
+		Expect(middlewaresArray[3]).To(BeAssignableToTypeOf(inOutMiddleware))
+		Expect(middlewaresArray[4]).To(BeAssignableToTypeOf(swaggerMiddleware))
+	})
+})

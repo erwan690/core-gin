@@ -1,9 +1,10 @@
-package routes
+package routes_test
 
 import (
-	"testing"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
-	"github.com/stretchr/testify/assert"
+	. "core-gin/api/routes"
 )
 
 type MockRoute struct {
@@ -14,20 +15,24 @@ func (m *MockRoute) Setup() {
 	m.SetupCalled = true
 }
 
-func TestRoutes(t *testing.T) {
-	// Create a mock health route
-	mockHealthRoute := new(MockRoute)
+var _ = Describe("Routes", func() {
+	var (
+		mockHealthRoute *MockRoute
+		routes          Routes
+	)
 
-	// Call the NewRoutes function
-	routes := NewRoutes(mockHealthRoute)
+	BeforeEach(func() {
+		mockHealthRoute = new(MockRoute)
+		routes = NewRoutes(mockHealthRoute)
+	})
 
-	// Assert that the returned value is a Routes instance with the correct route
-	assert.Len(t, routes, 1)
-	assert.Equal(t, mockHealthRoute, routes[0])
+	It("creates a Routes instance with the correct route", func() {
+		Expect(routes).To(HaveLen(1))
+		Expect(routes[0]).To(Equal(mockHealthRoute))
+	})
 
-	// Call the Setup method
-	routes.Setup()
-
-	// Assert that the Setup method was called on the mock health route
-	assert.True(t, mockHealthRoute.SetupCalled)
-}
+	It("calls the Setup method on the mock health route", func() {
+		routes.Setup()
+		Expect(mockHealthRoute.SetupCalled).To(BeTrue())
+	})
+})

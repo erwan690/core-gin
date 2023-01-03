@@ -1,67 +1,52 @@
-package middlewares
+package middlewares_test
 
 import (
+	"net/http"
+	"net/http/httptest"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"core-gin/api/middlewares"
 	"core-gin/constants"
 	"core-gin/lib"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 )
 
-// TestPaginationMiddleware is a test suite for the PaginationMiddleware struct
-type TestPaginationMiddleware struct {
-	suite.Suite
-}
+var _ = Describe("PaginationMiddleware", func() {
+	var (
+		logger               lib.Logger
+		paginationMiddleware middlewares.PaginationMiddleware
+		handler              gin.HandlerFunc
+		c                    *gin.Context
+	)
 
-// TestHandle tests the Handle method of the PaginationMiddleware struct
-func (suite *TestPaginationMiddleware) TestHandle() {
-	logger := lib.GetLogger()
-	paginationMiddleware := NewPaginationMiddleware(logger)
-	handler := paginationMiddleware.Handle()
+	BeforeEach(func() {
+		logger = lib.GetLogger()
+		paginationMiddleware = middlewares.NewPaginationMiddleware(logger)
+		handler = paginationMiddleware.Handle()
+		w := httptest.NewRecorder()
+		c, _ = gin.CreateTestContext(w)
+	})
 
-	// Create a mock Context object
-	c, _ := gin.CreateTestContext(nil)
-	// Set the query parameters of the mock Context object
-	c.Request.URL.RawQuery = "limit=20&page=2"
-	// Call the handler function
-	handler(c)
+	It("sets the limit and page variables based on the query parameters", func() {
+		c.Request, _ = http.NewRequest("GET", "/?limit=20&page=2", nil)
+		handler(c)
+		Expect(c.GetInt64(constants.Limit)).To(Equal(int64(20)))
+		Expect(c.GetInt64(constants.Page)).To(Equal(int64(2)))
+	})
 
-	// Assert that the limit and page variables were set correctly
-	assert.Equal(suite.T(), int64(20), c.GetInt64(constants.Limit))
-	assert.Equal(suite.T(), int64(2), c.GetInt64(constants.Page))
-}
+	It("sets the limit and page variables to default values when the query parameters are not set", func() {
+		handler(c)
+		Expect(c.GetInt64(constants.Limit)).To(Equal(int64(10)))
+		Expect(c.GetInt64(constants.Page)).To(Equal(int64(0)))
+	})
 
-// TestHandleWithoutParams tests the Handle method of the PaginationMiddleware struct when the query parameters are not set
-func (suite *TestPaginationMiddleware) TestHandleWithoutParams() {
-	logger := lib.GetLogger()
-	paginationMiddleware := NewPaginationMiddleware(logger)
-	handler := paginationMiddleware.Handle()
-
-	// Create a mock Context object
-	c, _ := gin.CreateTestContext(nil)
-	// Call the handler function without setting the query parameters
-	handler(c)
-
-	// Assert that the limit and page variables were set to the default values
-	assert.Equal(suite.T(), int64(10), c.GetInt64(constants.Limit))
-	assert.Equal(suite.T(), int64(0), c.GetInt64(constants.Page))
-}
-
-// TestHandleWithInvalidParams tests the Handle method of the PaginationMiddleware struct when the query parameters are invalid
-func (suite *TestPaginationMiddleware) TestHandleWithInvalidParams() {
-	logger := lib.GetLogger()
-	paginationMiddleware := NewPaginationMiddleware(logger)
-	handler := paginationMiddleware.Handle()
-
-	// Create a mock Context object
-	c, _ := gin.CreateTestContext(nil)
-	// Set the query parameters of the mock Context object to invalid values
-	c.Request.URL.RawQuery = "limit=abc&page=def"
-	// Call the handler function
-	handler(c)
-
-	// Assert that the limit and page variables were set to the default values
-	assert.Equal(suite.T(), int64(10), c.GetInt64(constants.Limit))
-	assert.Equal(suite.T(), int64(0), c.GetInt64(constants.Page))
-}
+	It("sets the limit and page variables to default values when the query parameters are invalid", func() {
+		c.Request, _ = http.NewRequest("GET", "/?limit=abc&page=def", nil)
+		handler(c)
+		Expect(c.GetInt64(constants.Limit)).To(Equal(int64(10)))
+		Expect(c.GetInt64(constants.Page)).To(Equal(int64(0)))
+	})
+})

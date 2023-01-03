@@ -1,15 +1,18 @@
-package bootstrap
+package bootstrap_test
 
 import (
-	"testing"
+	"core-gin/bootstrap"
 
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-func TestNewApp(t *testing.T) {
-	// Call the NewApp function
-	app := NewApp()
+var _ = Describe("NewApp", func() {
+	It("returns an App instance with the correct command", func() {
+		// Call the NewApp function
+		app := bootstrap.NewApp()
 
-	// Assert that the returned value is an App instance with the correct command
-	assert.Equal(t, rootCmd, app.Command)
-}
+		// Assert that the returned value is an App instance with the correct command
+		Expect(app.Command).To(Equal(bootstrap.RootCmd))
+	})
+})
