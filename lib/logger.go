@@ -38,12 +38,12 @@ func GetLogger() Logger {
 	if globalLog != nil {
 		return *globalLog
 	}
-	globalLog := newLogger(*NewEnv())
+	globalLog := NewLogger(*NewEnv())
 	return *globalLog
 }
 
-// newLogger sets up logger the main logger
-func newLogger(env Env) *Logger {
+// NewLogger sets up logger the main logger
+func NewLogger(env Env) *Logger {
 	logLevel := env.LogLevel
 
 	config := zap.NewProductionConfig()
@@ -66,12 +66,12 @@ func newLogger(env Env) *Logger {
 	config.Level.SetLevel(level)
 	zapLogger, _ := config.Build()
 	otelzapLogger = otelzap.New(zapLogger)
-	logger := newSugaredLogger(otelzapLogger)
+	logger := NewSugaredLogger(otelzapLogger)
 
 	return logger
 }
 
-func newSugaredLogger(logger *otelzap.Logger) *Logger {
+func NewSugaredLogger(logger *otelzap.Logger) *Logger {
 	return &Logger{
 		SugaredLogger: logger.Sugar(),
 	}
@@ -85,7 +85,7 @@ func (l *Logger) GetGormLogger() gormlogger.Interface {
 	)
 
 	return &GormLogger{
-		Logger: newSugaredLogger(logger),
+		Logger: NewSugaredLogger(logger),
 		Config: gormlogger.Config{
 			LogLevel: gormlogger.Info,
 		},
@@ -98,7 +98,7 @@ func (l *Logger) GetFxLogger() fxevent.Logger {
 		zap.WithCaller(false),
 	)
 
-	return &FxLogger{Logger: newSugaredLogger(logger)}
+	return &FxLogger{Logger: NewSugaredLogger(logger)}
 }
 
 func (l *FxLogger) LogEvent(event fxevent.Event) {
