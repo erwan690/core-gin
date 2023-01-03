@@ -2,18 +2,12 @@ package lib_test
 
 import (
 	"os"
-	"testing"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"core-gin/lib"
 )
-
-func TestLib(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Lib Suite")
-}
 
 var _ = Describe("Lib", func() {
 	Describe("NewEnv", func() {

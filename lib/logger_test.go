@@ -7,7 +7,7 @@ import (
 
 	"core-gin/lib"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/uptrace/opentelemetry-go-extra/otelzap"
 	"go.uber.org/fx/fxevent"

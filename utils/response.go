@@ -18,6 +18,7 @@ type BaseResponse struct {
 	Success bool        `json:"success"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
+	TraceID string      `json:"trace_id"`
 }
 
 type SuccessListResponse struct {
@@ -29,6 +30,7 @@ type ErrorResponse struct {
 	Success bool        `json:"success" default:"false"`
 	Message string      `json:"message" example:"failure because of error"`
 	Data    interface{} `json:"data"`
+	TraceID string      `json:"trace_id"`
 }
 
 func GetPageInfo(limit int, page int, total int) *PageInfo {

@@ -3,19 +3,13 @@ package utils_test
 import (
 	"net/http"
 	"net/http/httptest"
-	"testing"
 
 	"core-gin/utils"
 
 	"github.com/gin-gonic/gin"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
-
-func TestUtils(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Utils Suite")
-}
 
 var _ = Describe("GetPageInfo", func() {
 	It("should return the correct page info", func() {

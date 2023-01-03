@@ -1,4 +1,4 @@
-package handlers
+package handlers_test
 
 import (
 	"context"
@@ -6,10 +6,14 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"testing"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"core-gin/infrastructure"
+	"core-gin/internal/handlers"
 	"core-gin/lib"
+	"core-gin/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,40 +26,46 @@ func (s *mockHealthService) PingDB(ctx context.Context) error {
 	return s.err
 }
 
-func TestHealth(t *testing.T) {
-	// Set up test data and dependencies
-	service := &mockHealthService{}
-	tracer := infrastructure.NewTracer(&lib.Env{})
-	handler := NewHealthHandler(service, tracer)
+var _ = Describe("Health", func() {
+	var (
+		service  *mockHealthService
+		tracer   infrastructure.ITracer
+		handler  handlers.IHealthHandler
+		response utils.BaseResponse
+		w        *httptest.ResponseRecorder
+		c        *gin.Context
+		req      *http.Request
+	)
 
-	// Test successful database ping
-	service.err = nil
-	req, _ := http.NewRequest("GET", "/health", nil)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = req
-	handler.Health(c)
-	if w.Code != http.StatusOK {
-		t.Errorf("Expected HTTP status code %d, got %d", http.StatusOK, w.Code)
-	}
-	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
-	if response["db"] != "ok" {
-		t.Errorf("Expected 'db' to be 'ok', got '%s'", response["db"])
-	}
+	BeforeEach(func() {
+		// Set up test data and dependencies
+		service = &mockHealthService{}
+		tracer = infrastructure.NewTracer(&lib.Env{})
+		handler = handlers.NewHealthHandler(service, tracer)
+		w = httptest.NewRecorder()
+		c, _ = gin.CreateTestContext(w)
+		response = utils.BaseResponse{}
+	})
 
-	// Test failed database ping
-	service.err = errors.New("error pinging database")
-	req, _ = http.NewRequest("GET", "/health", nil)
-	w = httptest.NewRecorder()
-	c, _ = gin.CreateTestContext(w)
-	c.Request = req
-	handler.Health(c)
-	if w.Code != http.StatusOK {
-		t.Errorf("Expected HTTP status code %d, got %d", http.StatusOK, w.Code)
-	}
-	json.Unmarshal(w.Body.Bytes(), &response)
-	if response["db"] != "fail" {
-		t.Errorf("Expected 'db' to be 'fail', got '%s'", response["db"])
-	}
-}
+	It("should return 'ok' for a successful database ping", func() {
+		// Test successful database ping
+		service.err = nil
+		req, _ = http.NewRequest("GET", "/health", nil)
+		c.Request = req
+		handler.Health(c)
+		Expect(w.Code).To(Equal(http.StatusOK))
+		json.Unmarshal(w.Body.Bytes(), &response)
+		Expect(response.Message).To(Equal("ok"))
+	})
+
+	It("should return 'fail' for a failed database ping", func() {
+		// Test failed database ping
+		service.err = errors.New("error pinging database")
+		req, _ = http.NewRequest("GET", "/health", nil)
+		c.Request = req
+		handler.Health(c)
+		Expect(w.Code).To(Equal(http.StatusOK))
+		json.Unmarshal(w.Body.Bytes(), &response)
+		Expect(response.Message).To(Equal("fail"))
+	})
+})

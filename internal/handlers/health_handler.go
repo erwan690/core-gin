@@ -5,6 +5,7 @@ import (
 
 	"core-gin/infrastructure"
 	"core-gin/internal/services"
+	"core-gin/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,8 +29,8 @@ func (h *HealthHandler) Health(c *gin.Context) {
 
 	err := h.service.PingDB(ctx)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"db": "fail"})
+		utils.DynamicErrorCodeResponse(c, "fail", http.StatusOK)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"db": "ok"})
+	utils.SuccessResponse(c, "ok", nil)
 }
