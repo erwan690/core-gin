@@ -132,8 +132,6 @@ go install github.com/swaggo/swag/cmd/swag@latest
 
 </details>
 
----
-
 To See Doc run the app and Browse to `http://localhost/swagger/index.html`
 
 -   You can see all the documented endpoints in Swagger-UI from the API specification
