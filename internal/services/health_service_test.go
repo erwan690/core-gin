@@ -9,6 +9,7 @@ import (
 	"core-gin/internal/services"
 	"core-gin/lib"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.opentelemetry.io/otel/trace"
@@ -20,7 +21,14 @@ type mockHealthRepo struct {
 
 func (r *mockHealthRepo) GetDB(ctx context.Context) (*sql.DB, error) {
 	// return a mock database connection and an error
-	return nil, fmt.Errorf("error getting database connection")
+	if r.err != nil {
+		return nil, r.err
+	}
+	db, _, err := sqlmock.New()
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
 var _ = Describe("HealthService", func() {
@@ -45,9 +53,19 @@ var _ = Describe("HealthService", func() {
 
 	It("should return an error when pinging the database", func() {
 		// call the PingDB function
+		repo.err = fmt.Errorf("error getting database connection")
 		err := s.PingDB(ctx)
 
 		// assert that the correct error is returned
 		Expect(err).To(HaveOccurred())
+	})
+
+	It("should return nil when pinging the database", func() {
+		// call the PingDB function
+		repo.err = nil
+		err := s.PingDB(ctx)
+
+		// assert that the correct error is returned
+		Expect(err).NotTo(HaveOccurred())
 	})
 })
