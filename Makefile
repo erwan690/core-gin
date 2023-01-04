@@ -26,4 +26,7 @@ migrate-create:
 generate-docs:
 	swag init -pd
 
+generate-cover:
+	gopherbadger -png=false -md="README.md"
+
 .PHONY: migrate-status migrate-up migrate-down migrate-redo migrate-create generate-docs

@@ -1,5 +1,7 @@
 # Core Gin
 
+<a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-80%25-brightgreen.svg?longCache=true&style=flat)</a>
+
 Core Gin with [Gin Web Framework](https://github.com/gin-gonic/gin)
 
 ## Features
@@ -106,6 +108,26 @@ go test ./... -v
 go test ./... -v -coverprofile cover.txt -coverpkg=./...
 go tool cover -html=cover.txt -o index.html
 ```
+
+### For coverage Badge
+
+> You can skip this step if `gopherbadger` has already been installed on your local machine.
+
+install the executeable (ensure your $PATH contains $GOPATH/bin):
+
+```
+go install github.com/jpoles1/gopherbadger@latest
+```
+### Running generation Bade
+
+<details>
+    <summary>Available generate badge commands</summary>
+
+| Command               | Desc                                                       |
+| --------------------- | ---------------------------------------------------------- |
+| `make generate-cover` | Generate Coverage Badge on README                          |
+
+</details>
 
 ---
 
